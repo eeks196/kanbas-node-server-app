@@ -35,6 +35,5 @@ Hello(app)
 Lab5(app)
 CourseRoutes(app)
 ModuleRoutes(app)
-AssignmentsRoutes(app)
 UserRoutes(app);
 app.listen(process.env.PORT || 4000);
