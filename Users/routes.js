@@ -8,12 +8,14 @@ export default function UserRoutes(app) {
     const status = await dao.deleteUser(req.params.userId);
     res.json(status);
   };
-
   const findAllUsers = async (req, res) => {
     const users = await dao.findAllUsers();
     res.json(users);
   };
-  const findUserById = async (req, res) => {};
+  const findUserById = async (req, res) => {
+    const user = await dao.findUserById(req.params.userId);
+    res.json(user);
+  };
   const updateUser = async (req, res) => {
     const { userId } = req.params;
     const status = await dao.updateUser(userId, req.body);
@@ -21,18 +23,16 @@ export default function UserRoutes(app) {
     req.session["currentUser"] = currentUser;
     res.json(status);
   };
-
   const signup = async (req, res) => {
     const user = await dao.findUserByUsername(req.body.username);
     if (user) {
-      res.status(400).json({ message: "Username already taken" });
+      res.status(400).json(
+        { message: "Username already taken" });
     }
-    let currentUser = null;
-    currentUser = await dao.createUser(req.body);
+    const currentUser = await dao.createUser(req.body);
     req.session["currentUser"] = currentUser;
     res.json(currentUser);
   };
-
   const signin = async (req, res) => {
     const { username, password } = req.body;
     const currentUser = await dao.findUserByCredentials(username, password);
@@ -43,13 +43,11 @@ export default function UserRoutes(app) {
       res.sendStatus(401);
     }
   };
-
   const signout = (req, res) => {
     req.session.destroy();
     res.sendStatus(200);
   };
-
-  const profile = (req, res) => {
+  const profile = async (req, res) => {
     const currentUser = req.session["currentUser"];
     if (!currentUser) {
       res.sendStatus(401);
@@ -57,7 +55,6 @@ export default function UserRoutes(app) {
     }
     res.json(currentUser);
   };
-
   app.post("/api/users", createUser);
   app.get("/api/users", findAllUsers);
   app.get("/api/users/:userId", findUserById);
